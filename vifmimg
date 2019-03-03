@@ -21,7 +21,7 @@ if [ -e "$FIFO_UEBERZUG" ]; then
                            [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
                            [path]="/tmp${PWD}/$6.png") \
             > "$FIFO_UEBERZUG"
-${PWD}
+
     elif [[ "$1" == "gifpreview" ]]; then
         echo -e "Loading preview..\nFile: $6"
         [[ ! -d "/tmp${PWD}/$6/" ]] && mkdir -p "/tmp${PWD}/$6/" && convert -coalesce "${PWD}/$6" "/tmp${PWD}/$6/$6.png"
