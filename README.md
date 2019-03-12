@@ -28,6 +28,11 @@ variable for easy access to the files.
         \ vifmimg pdfpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
+    fileviewer *.epub
+        \ vifmimg epubpreview %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
+
 
     fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
         \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
