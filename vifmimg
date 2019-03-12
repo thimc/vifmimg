@@ -40,6 +40,13 @@ if [ -e "$FIFO_UEBERZUG" ]; then
                                 [path]="/tmp$PWD/$6/$6-0.png") \
             > "$FIFO_UEBERZUG"
         fi
+    elif [[ "$1" == "epubpreview" ]]; then
+        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
+        [[ ! -f "/tmp$PWD/$6.png" ]] && epub-thumbnailer "$6" "/tmp$PWD/$6.png" 512
+        declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+                           [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+                           [path]="/tmp$PWD/$6.png") \
+            > "$FIFO_UEBERZUG"
     elif [[ "$1" == "pdfpreview" ]]; then
         [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
         [[ ! -f "/tmp$PWD/$6.png" ]] && pdftoppm -png -singlefile "$6" "/tmp$PWD/$6"

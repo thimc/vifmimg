@@ -54,6 +54,7 @@ variable for easy access to the files.
 * ffmpegthumbnailer
 * ImageMagick
 * pdftoppm
+* epub-thumbnailer
 
 ## Credits
 * Seebye for creating [Überzug](https://github.com/seebye/ueberzug) and the initial script
