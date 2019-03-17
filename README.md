@@ -13,7 +13,7 @@ animation loop the user needs to hit the CTRL-C. Sometimes this breaks the previ
 entirely. When resizing the terminal window the animation replays.
 There is room for improvement here.
 
-PDF preview is also supported, this is done via pdftoppm and works almost flawlessly,
+PDF/epub preview is also supported, this is done via pdftoppm and epub-thumbnailer and works almost flawlessly,
 a minor flash between the previews occur due to pdftoppm generating the image.
 
 ## Installation
@@ -28,11 +28,11 @@ variable for easy access to the files.
         \ vifmimg pdfpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
+
     fileviewer *.epub
         \ vifmimg epubpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
-
 
     fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
         \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
