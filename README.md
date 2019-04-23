@@ -16,6 +16,8 @@ There is room for improvement here.
 PDF/epub preview is also supported, this is done via pdftoppm and epub-thumbnailer and works almost flawlessly,
 a minor flash between the previews occur due to pdftoppm generating the image.
 
+Ico files are supported and is utilizing ImageMagick.
+
 ## Installation
 1. Copy the **vifmimg** and **vifmrun** scripts to a folder that is included in your $PATH
 variable for easy access to the files.
@@ -47,6 +49,11 @@ variable for easy access to the files.
 
     fileviewer *.gif
         \ vifmimg gifpreview %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
+
+    fileviewer *.ico
+        \ vifmimg magickpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 ```
