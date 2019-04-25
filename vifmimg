@@ -13,7 +13,7 @@ readonly ID_PREVIEW="preview"
 PDF_PAGE_CONFIG="$HOME/.config/vifm/vifmimgpdfpage"
 PDF_FILE_CONFIG="$HOME/.config/vifm/vifmimgpdffile"
 
-PDF_PAGE=0
+PDF_PAGE=1
 PDF_FILE=""
 
 [[ -f "$PDF_PAGE_CONFIG" ]] && PDF_PAGE=$(cat $PDF_PAGE_CONFIG) || touch $PDF_PAGE_CONFIG
@@ -29,6 +29,7 @@ elif [[ "$1" == "dec" ]]; then
 		echo 0 > $PDF_PAGE_CONFIG
 	fi
 fi
+
 
 if [ -e "$FIFO_UEBERZUG" ]; then
     if [[ "$1" == "draw" ]]; then
@@ -69,7 +70,7 @@ if [ -e "$FIFO_UEBERZUG" ]; then
             > "$FIFO_UEBERZUG"
     elif [[ "$1" == "pdfpreview" ]]; then
         [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
-        [[ ! "$6" == "$PDF_FILE" ]] && PDF_PAGE=0 && echo 0 > $PDF_PAGE_CONFIG && rm -f "/tmp$PWD/$6.png"
+        [[ ! "$6" == "$PDF_FILE" ]] && PDF_PAGE=1 && echo 1 > $PDF_PAGE_CONFIG && rm -f "/tmp$PWD/$6.png"
         [[ ! $PDF_PAGE == "0" ]] && [[ -f "/tmp$PWD/$6.png" ]] && rm -f "/tmp$PWD/$6.png"
         [[ ! -f "/tmp$PWD/$6.png" ]] && pdftoppm -png -f $PDF_PAGE -singlefile "$6" "/tmp$PWD/$6"
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
