@@ -16,8 +16,8 @@ PDF_FILE_CONFIG="$HOME/.config/vifm/vifmimgpdffile"
 PDF_PAGE=0
 PDF_FILE=""
 
-[[ -f "$PDF_PAGE_CONFIG" ]] && PDF_PAGE=$(cat $PDF_PAGE_CONFIG)
-[[ -f "$PDF_FILE_CONFIG" ]] && PDF_FILE=$(cat $PDF_FILE_CONFIG)
+[[ -f "$PDF_PAGE_CONFIG" ]] && PDF_PAGE=$(cat $PDF_PAGE_CONFIG) || touch $PDF_PAGE_CONFIG
+[[ -f "$PDF_FILE_CONFIG" ]] && PDF_FILE=$(cat $PDF_FILE_CONFIG) || touch $PDF_FILE_CONFIG
 
 if [[ "$1" == "inc" ]]; then
 	VAL="$(cat $PDF_PAGE_CONFIG)"
