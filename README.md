@@ -58,6 +58,14 @@ variable for easy access to the files.
         \ vifmimg clear
 ```
 
+You will also need to add these keybindings (preferbly in the bottom of your vifmrc) in order to get the PDF scrolling functionalities:
+
+```
+    map > :!vifmimg inc<CR>
+    map < :!vifmimg dec<CR>
+
+```
+
 3. In order to launch Vifm with image preview from now you'll need to use the supplied
 **vifmrun** script
 

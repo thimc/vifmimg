@@ -10,6 +10,27 @@ readonly ID_PREVIEW="preview"
 # and by doing so the preview will always be up-to-date with the file.
 # This however, requires more CPU and therefore affects the overall performance.
 
+PDF_PAGE_CONFIG="$HOME/.config/vifm/vifmimgpdfpage"
+PDF_FILE_CONFIG="$HOME/.config/vifm/vifmimgpdffile"
+
+PDF_PAGE=0
+PDF_FILE=""
+
+[[ -f "$PDF_PAGE_CONFIG" ]] && PDF_PAGE=$(cat $PDF_PAGE_CONFIG)
+[[ -f "$PDF_FILE_CONFIG" ]] && PDF_FILE=$(cat $PDF_FILE_CONFIG)
+
+if [[ "$1" == "inc" ]]; then
+	VAL="$(cat $PDF_PAGE_CONFIG)"
+	echo "$(expr $VAL + 1)" > $PDF_PAGE_CONFIG
+elif [[ "$1" == "dec" ]]; then
+	VAL="$(cat $PDF_PAGE_CONFIG)"
+	echo "$(expr $VAL - 1)" > $PDF_PAGE_CONFIG
+	if [[ $VAL -le 0 ]]; then
+		echo 0 > $PDF_PAGE_CONFIG
+	fi
+fi
+notify-send "$PAGE"
+
 if [ -e "$FIFO_UEBERZUG" ]; then
     if [[ "$1" == "draw" ]]; then
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
@@ -17,16 +38,14 @@ if [ -e "$FIFO_UEBERZUG" ]; then
                            [path]="$PWD/$6") \
             > "$FIFO_UEBERZUG"
     elif [[ "$1" == "videopreview" ]]; then
-        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
-        [[ ! -f "/tmp$PWD/$6.png" ]] && \
-            ffmpegthumbnailer -i "$PWD/$6" -o "/tmp$PWD/$6.png" -s 0 -q 10
+        [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
+        [[ ! -f "/tmp$PWD/$6.png" ]] && ffmpegthumbnailer -i "$PWD/$6" -o "/tmp$PWD/$6.png" -s 0 -q 10
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
                            [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
                            [path]="/tmp$PWD/$6.png") \
             > "$FIFO_UEBERZUG"
     elif [[ "$1" == "gifpreview" ]]; then
-        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/" && \
-            convert -coalesce "$PWD/$6" "/tmp$PWD/$6/$6.png"
+        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/" && convert -coalesce "$PWD/$6" "/tmp$PWD/$6/$6.png"
         if [[ ! -z "$PLAY_GIF" ]]; then
             for frame in $(ls -1 /tmp$PWD/$6/$6*.png | sort -V); do
                declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
@@ -43,21 +62,24 @@ if [ -e "$FIFO_UEBERZUG" ]; then
             > "$FIFO_UEBERZUG"
         fi
     elif [[ "$1" == "epubpreview" ]]; then
-        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
-        [[ ! -f "/tmp$PWD/$6.png" ]] && epub-thumbnailer "$6" "/tmp$PWD/$6.png" 512
+        [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
+        [[ ! -f "/tmp$PWD/$6.png" ]] && epub-thumbnailer "$6" "/tmp$PWD/$6.png" 1024
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
                            [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
                            [path]="/tmp$PWD/$6.png") \
             > "$FIFO_UEBERZUG"
     elif [[ "$1" == "pdfpreview" ]]; then
-        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
-        [[ ! -f "/tmp$PWD/$6.png" ]] && pdftoppm -png -singlefile "$6" "/tmp$PWD/$6"
+        [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
+        [[ ! "$6" == "$PDF_FILE" ]] && notify-send "not same" && PDF_PAGE=0 && echo 0 > $PDF_PAGE_CONFIG
+        [[ ! $PDF_PAGE == "0" ]] && [[ -f "/tmp$PWD/$6.png" ]] && rm -f "/tmp$PWD/$6.png"
+        [[ ! -f "/tmp$PWD/$6.png" ]] && pdftoppm -png -f $PDF_PAGE -singlefile "$6" "/tmp$PWD/$6"
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
                            [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
                            [path]="/tmp$PWD/$6.png") \
             > "$FIFO_UEBERZUG"
+        echo "$6" > $PDF_FILE_CONFIG
     elif [[ "$1" == "magickpreview" ]]; then
-        [[ ! -d "/tmp$PWD/$6/" ]] && mkdir -p "/tmp$PWD/$6/"
+        [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
         [[ ! -f "/tmp$PWD/$6.png" ]] && \
             convert -thumbnail $(identify -format "%wx%h" "$6") "$PWD/$6" "/tmp$PWD/$6.png"
 
@@ -70,6 +92,8 @@ if [ -e "$FIFO_UEBERZUG" ]; then
             > "$FIFO_UEBERZUG"
         [[ ! -z $AUTO_REMOVE ]] && [[ -f "/tmp$PWD/$6.png" ]] && rm -f "/tmp$PWD/$6.png"
         [[ ! -z $AUTO_REMOVE ]] && [[ -d "/tmp$PWD/$6/" ]] && rm -rf "/tmp$PWD/$6/"
-
+    elif [[ "$1" == "clean" ]]; then
+        [[ -f "/tmp$PWD/$6.png" ]] && rm -f "/tmp$PWD/$6.png"
+        [[ -d "/tmp$PWD/$6/" ]] && rm -rf "/tmp$PWD/$6/"
     fi
 fi
