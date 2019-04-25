@@ -69,7 +69,7 @@ if [ -e "$FIFO_UEBERZUG" ]; then
             > "$FIFO_UEBERZUG"
     elif [[ "$1" == "pdfpreview" ]]; then
         [[ ! -d "/tmp$PWD/" ]] && mkdir -p "/tmp$PWD/"
-        [[ ! "$6" == "$PDF_FILE" ]] && PDF_PAGE=0 && echo 0 > $PDF_PAGE_CONFIG
+        [[ ! "$6" == "$PDF_FILE" ]] && PDF_PAGE=0 && echo 0 > $PDF_PAGE_CONFIG && rm -f "/tmp$PWD/$6.png"
         [[ ! $PDF_PAGE == "0" ]] && [[ -f "/tmp$PWD/$6.png" ]] && rm -f "/tmp$PWD/$6.png"
         [[ ! -f "/tmp$PWD/$6.png" ]] && pdftoppm -png -f $PDF_PAGE -singlefile "$6" "/tmp$PWD/$6"
         declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
