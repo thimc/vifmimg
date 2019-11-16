@@ -73,7 +73,7 @@ You will also need to add these keybindings (preferably in the bottom of your vi
 * Überzug and Vifm (isn't this obvious?)
 * ffmpegthumbnailer
 * ImageMagick
-* pdftoppm (poppler-utils)
+* pdftoppm (Available in the AUR as **poppler** package.)
 * epub-thumbnailer
 
 ## Credits
