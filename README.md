@@ -1,8 +1,17 @@
-# Image previews using Überzug for Vifm (vi file manager)
+# Image previews using Überzug for vifm (vi file manager)
 
 ![image](https://raw.githubusercontent.com/cirala/vifmimg/master/screenshot.png)
 
-This script is used along Vifm for generating image previews for various file types in Vifm.
+This script is used along [vifm](https://github.com/vifm/vifm) to generate image previews for various file types in vifm.
+
+
+If you want image preview support for [lf](https://github.com/gokcehan/lf) check out [cirala/lfimg](https://github.com/cirala/lfimg).
+
+
+The script is currently able to handle the following formats:
+* Video files
+* eBook files
+* Images and icons
 
 Video previews are also supported by using ffmpegthumbnailer and works very well but just
 like the PDF previews there is a minor flash between each preview, this is due to
