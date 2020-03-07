@@ -3,7 +3,8 @@ export FIFO_UEBERZUG="/tmp/vifm-ueberzug-${PPID}"
 
 if [ ! -f "/usr/bin/ueberzug" ]; then
 	vifm
-exit
+	exit
+fi
 
 function cleanup {
     rm "$FIFO_UEBERZUG" 2>/dev/null
