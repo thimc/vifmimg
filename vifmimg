@@ -158,6 +158,7 @@ function main() {
         "gifpreview") previewgif "$@" ;;
         "pdfpreview") previewpdf "$@" ;;
         "magickpreview") previewmagick "$@" ;;
+	  "audiopreview") previewaudio "$@" ;;
         "*") echo "Unknown command: '$@'" ;;
     esac
 }
