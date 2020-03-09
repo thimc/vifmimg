@@ -79,6 +79,16 @@ function previewepub() {
         > "$FIFO_UEBERZUG"
 }
 
+function  previewaudio() {
+  if [[ ! -f "/tmp${PWD}/$6.png" ]]; then
+    ffmpeg -i "$6" "/tmp${PWD}/$6.png" -y &> /dev/null
+  fi
+  declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+                     [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+                     [path]="/tmp${PWD}/$6.png") \
+    > "$FIFO_UEBERZUG"
+}
+
 function previewgif() {
     if [[ ! -d "/tmp$PWD/$6/" ]]; then
         mkdir -p "/tmp$PWD/$6/"
@@ -148,6 +158,7 @@ function main() {
         "gifpreview") previewgif "$@" ;;
         "pdfpreview") previewpdf "$@" ;;
         "magickpreview") previewmagick "$@" ;;
+	  "audiopreview") previewaudio "$@" ;;
         "*") echo "Unknown command: '$@'" ;;
     esac
 }

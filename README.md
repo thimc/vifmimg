@@ -65,6 +65,11 @@ variable for easy access to the files.
         \ vifmimg magickpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
+        
+    fileviewer <audio/*>
+        \ vifmimg audio %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
 ```
 
 You will also need to add these keybindings (preferably in the bottom of your vifmrc) in order to get the PDF scrolling functionalities:
