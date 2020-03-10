@@ -72,6 +72,7 @@ variable for easy access to the files.
         \ vifmimg audio %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
+        
     fileviewer <font/*>
         \ vifmimg font %px %py %pw %ph %c
         \ %pc
@@ -89,16 +90,15 @@ You will also need to add these keybindings (preferably in the bottom of your vi
 **vifmrun** script
 
 ## Prerequisites
-* Überzug and Vifm (isn't this obvious?)
-* ffmpegthumbnailer
+* [Überzug](https://github.com/seebye/ueberzug) and [Vifm](https://github.com/vifm/vifm) (isn't this obvious?)
+* [ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)
 * ImageMagick
 * pdftoppm (Available in the AUR as **poppler** package.)
-* epub-thumbnailer
-* fontpreview
+* [epub-thumbnailer](https://github.com/marianosimone/epub-thumbnailer)
+* [fontpreview](https://github.com/sdushantha/fontpreview)
 
 ## Credits
 * Seebye for creating [Überzug](https://github.com/seebye/ueberzug) and the initial script
 that this script is heavily based upon.
 * [Ranger's](https://github.com/ranger/ranger) approach to file previewing as an
 inspiration source.
-
