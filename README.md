@@ -12,6 +12,8 @@ The script is currently able to handle the following formats:
 * Video files
 * eBook files
 * Images and icons
+* Audio files
+* Font files
 
 Video previews are also supported by using ffmpegthumbnailer and works very well but just
 like the PDF previews there is a minor flash between each preview, this is due to
@@ -70,6 +72,11 @@ variable for easy access to the files.
         \ vifmimg audio %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
+        
+    fileviewer <font/*>
+        \ vifmimg font %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
 ```
 
 You will also need to add these keybindings (preferably in the bottom of your vifmrc) in order to get the PDF scrolling functionalities:
@@ -77,22 +84,21 @@ You will also need to add these keybindings (preferably in the bottom of your vi
 ```
     map > :!vifmimg inc<CR>
     map < :!vifmimg dec<CR>
-
 ```
 
 3. In order to launch Vifm with image preview from now you'll need to use the supplied
 **vifmrun** script
 
 ## Prerequisites
-* Überzug and Vifm (isn't this obvious?)
-* ffmpegthumbnailer
+* [Überzug](https://github.com/seebye/ueberzug) and [Vifm](https://github.com/vifm/vifm) (isn't this obvious?)
+* [ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)
 * ImageMagick
 * pdftoppm (Available in the AUR as **poppler** package.)
-* epub-thumbnailer
+* [epub-thumbnailer](https://github.com/marianosimone/epub-thumbnailer)
+* [fontpreview](https://github.com/sdushantha/fontpreview)
 
 ## Credits
 * Seebye for creating [Überzug](https://github.com/seebye/ueberzug) and the initial script
 that this script is heavily based upon.
 * [Ranger's](https://github.com/ranger/ranger) approach to file previewing as an
 inspiration source.
-

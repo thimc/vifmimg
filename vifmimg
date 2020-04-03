@@ -89,6 +89,16 @@ function  previewaudio() {
     > "$FIFO_UEBERZUG"
 }
 
+function previewfont() {
+  if [[ ! -f "/tmp${PWD}/$6.png" ]]; then
+    fontpreview -i "$6" -o "/tmp${PWD}/$6.png"
+  fi
+  declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+                     [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+                     [path]="/tmp${PWD}/$6.png") \
+    > "$FIFO_UEBERZUG"
+}
+
 function previewgif() {
     if [[ ! -d "/tmp$PWD/$6/" ]]; then
         mkdir -p "/tmp$PWD/$6/"
@@ -159,6 +169,7 @@ function main() {
         "pdfpreview") previewpdf "$@" ;;
         "magickpreview") previewmagick "$@" ;;
 	  "audiopreview") previewaudio "$@" ;;
+	  "fontpreview") previewfont "$@" ;;
         "*") echo "Unknown command: '$@'" ;;
     esac
 }
