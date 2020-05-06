@@ -69,12 +69,12 @@ variable for easy access to the files.
         \ vifmimg clear
         
     fileviewer <audio/*>
-        \ vifmimg audio %px %py %pw %ph %c
+        \ vifmimg audiopreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
         
     fileviewer <font/*>
-        \ vifmimg font %px %py %pw %ph %c
+        \ vifmimg fontpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 ```
