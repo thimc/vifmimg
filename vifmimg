@@ -155,6 +155,23 @@ function previewmagick() {
 }
 
 
+function comic_preview() {
+    if [ ! -f "/tmp$PWD/$6.jpg" ]; then
+        if [[ ${6##*\.} == "cbz" ]]; then
+          unzip -qq -j "$6" "$(zipinfo -1 "$6" | sort | rg "(0{0,2})[012].jpg" --max-count=1)" -d /tmp$PWD/
+        elif [[ ${6##*\.} == "cbr" ]]; then
+          unrar e "$6" "$(unrar vb "$6" | sort | rg "(0{0,2})[012].jpg" --max-count=1)" /tmp$PWD/ -idq
+        fi
+        cd /tmp$PWD/ || exit
+        mv "$(find . -printf "%T@ %p\n" | head -n2 | tail -n1 | cut -d'/' -f2)" "/tmp$PWD/$6.jpg"
+    fi
+    declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+        [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+        [path]="/tmp$PWD/$6.jpg") \
+        > "$FIFO_UEBERZUG"
+}
+
+
 
 function main() {
     case "$1" in
@@ -168,8 +185,9 @@ function main() {
         "gifpreview") previewgif "$@" ;;
         "pdfpreview") previewpdf "$@" ;;
         "magickpreview") previewmagick "$@" ;;
-	  "audiopreview") previewaudio "$@" ;;
-	  "fontpreview") previewfont "$@" ;;
+        "audiopreview") previewaudio "$@" ;;
+        "fontpreview") previewfont "$@" ;;
+        "comic") comic_preview "$@" ;;
         "*") echo "Unknown command: '$@'" ;;
     esac
 }
