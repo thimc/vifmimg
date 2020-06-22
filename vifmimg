@@ -168,9 +168,9 @@ function main() {
         "gifpreview") previewgif "$@" ;;
         "pdfpreview") previewpdf "$@" ;;
         "magickpreview") previewmagick "$@" ;;
-	  "audiopreview") previewaudio "$@" ;;
-	  "fontpreview") previewfont "$@" ;;
-        "*") echo "Unknown command: '$@'" ;;
+        "audiopreview") previewaudio "$@" ;;
+        "fontpreview") previewfont "$@" ;;
+        *) echo "Unknown command: '$@'" ;;
     esac
 }
 main "$@"
