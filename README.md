@@ -38,7 +38,7 @@ variable for easy access to the files.
 
 ```
     fileviewer *.pdf
-        \ vifmimg pdfpreview %px %py %pw %ph %c
+        \ vifmimg pdfpreview %px %py %pw %ph %c "png"
         \ %pc
         \ vifmimg clear
 
@@ -75,6 +75,15 @@ variable for easy access to the files.
         
     fileviewer <font/*>
         \ vifmimg fontpreview %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
+```
+
+Your PDF-Preview will be shown as a `PNG`-File. If you want to load the pdf-file faster than you can try to convert the pdf-file into a `jpeg`-File. In that case you just need to remove `"png"` in you `fileviewer` in your `vifmrc`. <cr>
+*HINT*: It _might_ be faster...
+```
+    fileviewer *.pdf
+        \ vifmimg pdfpreview %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 ```

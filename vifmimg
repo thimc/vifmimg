@@ -122,24 +122,42 @@ function previewgif() {
 }
 
 function previewpdf() {
+
+	# Should it convert the pdf-file to jpg or png? (jpg is faster!)
+	# PDF_PATH: The temporary path where the image is saved
+	if [[ $7 == "png" ]]; then
+		PDF_TYPE="png"
+		PDF_PATH="/tmp$PWD/$6.png"
+	else
+		PDF_TYPE="jpg"
+		PDF_PATH="/tmp$PWD/$6"
+	fi
+
     if [[ ! "$6" == "$PDF_FILE" ]]; then
         PDF_PAGE=1
         echo 1 > $PDF_PAGE_CONFIG
-        rm -f "/tmp$PWD/$6.png"
+        rm -f "$PDF_PATH"
     fi
 
-    if [[ ! "$PDF_PAGE" == "1" ]] && [[ -f "/tmp$PWD/$6.png" ]]; then
-        rm -f "/tmp$PWD/$6.png"
+	if [[ ! "$PDF_PAGE" == "1" ]] && [[ -f "$PDF_PATH.$PDF_TYPE" ]]; then
+		rm -f "$PDF_PATH"
     fi
 
-    if [[ ! -f "/tmp$PWD/$6.png" ]]; then
-        pdftoppm -png -f $PDF_PAGE -singlefile "$6" "/tmp$PWD/$6"
+	if [[ ! -f "$PDF_PATH.$PDF_TYPE" ]]; then
+
+		# convert it to jpeg or pdf?
+		if [[ $PDF_TYPE == "jpg" ]]; then
+        	pdftoppm -f 1 -l 1 -scale-to-y -1 -singlefile -jpeg -tiffcompression jpeg "$6" "$PDF_PATH"
+		else
+			pdftoppm -png -f $PDF_PAGE -singlefile "$6" "$PDF_PATH"
+		fi
+
     fi
     echo "$6" > $PDF_FILE_CONFIG
 
     declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
         [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-        [path]="/tmp$PWD/$6.png") \
+		[path]="$PDF_PATH.$PDF_TYPE") \
         > "$FIFO_UEBERZUG"
 }
 
