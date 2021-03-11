@@ -3,7 +3,7 @@ export FIFO_UEBERZUG="/tmp/vifm-ueberzug-${PPID}"
 
 # this should work with both local and global ueberzug install
 if [ ! -x $(command -v ueberzug >/dev/null 2>&1) ]; then
-	vifm
+	vifm "$@"
 	exit
 fi
 
