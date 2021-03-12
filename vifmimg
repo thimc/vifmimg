@@ -16,14 +16,18 @@ PDF_PAGE_CONFIG="$HOME/.config/vifm/vifmimgpdfpage"
 PDF_FILE_CONFIG="$HOME/.config/vifm/vifmimgpdffile"
 PDF_PAGE=1
 PDF_FILE=""
+
+# The path to the cache
+CACHE="/tmp/vifmimg-cache"
+
 # Initialize the variables and required files
 [[ -f "$PDF_PAGE_CONFIG" ]] && PDF_PAGE=$(cat $PDF_PAGE_CONFIG) || touch $PDF_PAGE_CONFIG
 [[ -f "$PDF_FILE_CONFIG" ]] && PDF_FILE=$(cat $PDF_FILE_CONFIG) || touch $PDF_FILE_CONFIG
 
 
 # Create temporary working directory if the directory structure doesn't exist
-if [[ ! -d "/tmp$PWD/" ]]; then
-    mkdir -p "/tmp$PWD/"
+if [[ ! -d "$CACHE" ]]; then
+    mkdir -p "$CACHE"
 fi
 
 function inc() {
@@ -45,10 +49,10 @@ function previewclear() {
 }
 
 function fileclean() {
-    if [[ -f "/tmp$PWD/$6.png" ]]; then
-        rm -f "/tmp$PWD/$6.png"
-    elif  [[ -d "/tmp$PWD/$6/" ]]; then
-        rm -rf "/tmp$PWD/$6/"
+    if [[ -f "$CACHE/$6.png" ]]; then
+        rm -f "$CACHE/$6.png"
+    elif  [[ -d "$CACHE/$6/" ]]; then
+        rm -rf "$CACHE/$6/"
     fi
 }
 
@@ -60,22 +64,38 @@ function preview() {
 }
 
 function previewvideo() {
-    if [[ ! -f "/tmp$PWD/$6.png" ]]; then
-        ffmpegthumbnailer -i "$PWD/$6" -o "/tmp$PWD/$6.png" -s 0 -q 10
-    fi
-    declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
-        [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-        [path]="/tmp$PWD/$6.png") \
-        > "$FIFO_UEBERZUG"
+
+	if [[ ! -d "/tmp/vifm" ]]; then
+		mkdir -p /tmp/vifm
+	fi
+
+	# Create the tmp-video file to read from
+	if [[ ! -f "/tmp/vifm/$6.png" ]]; then
+		ffmpegthumbnailer -i "$PWD/$6" -o "/tmp/vifm/$6.png" -s 0 -q 10
+	fi
+
+	declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+		[x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+			[path]="/tmp/vifm/$6.png") \
+		> "$FIFO_UEBERZUG"
+
+	#if [[ ! -f "$CACHE/$6.png" ]]; then
+    #    ffmpegthumbnailer -i "$PWD/$6" -o "$CACHE/$6.png" -s 0 -q 10
+    #fi
+
+    #declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
+    #    [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
+    #    [path]="$CACHE/$6.png") \
+    #    > "$FIFO_UEBERZUG"
 }
 
 function previewepub() {
-    if [[ ! -f "/tmp$PWD/$6.png" ]]; then
-        epub-thumbnailer "$6" "/tmp$PWD/$6.png" 1024
+    if [[ ! -f "$CACHE/$6.png" ]]; then
+        epub-thumbnailer "$6" "$CACHE/$6.png" 1024
     fi
     declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
         [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-        [path]="/tmp$PWD/$6.png") \
+        [path]="$CACHE/$6.png") \
         > "$FIFO_UEBERZUG"
 }
 
@@ -100,12 +120,12 @@ function previewfont() {
 }
 
 function previewgif() {
-    if [[ ! -d "/tmp$PWD/$6/" ]]; then
-        mkdir -p "/tmp$PWD/$6/"
-        convert -coalesce "$PWD/$6" "/tmp$PWD/$6/$6.png"
+    if [[ ! -d "$CACHE/$6/" ]]; then
+        mkdir -p "$CACHE/$6/"
+        convert -coalesce "$PWD/$6" "$CACHE/$6/$6.png"
     fi
     if [[ ! -z "$PLAY_GIF" ]]; then
-        for frame in $(ls -1 /tmp$PWD/$6/$6*.png | sort -V); do
+        for frame in $(ls -1 $CACHE/$6/$6*.png | sort -V); do
             declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
                 [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
                 [path]="$frame") \
@@ -116,41 +136,59 @@ function previewgif() {
     else
             declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
                 [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-                [path]="/tmp$PWD/$6/$6-0.png") \
+                [path]="$CACHE/$6/$6-0.png") \
                 > "$FIFO_UEBERZUG"
     fi
 }
 
 function previewpdf() {
+
+	# Should it convert the pdf-file to jpg or png? (jpg is faster!)
+	# PDF_PATH: The temporary path where the image is saved
+	if [[ $7 == "png" ]]; then
+		PDF_TYPE="png"
+		PDF_PATH="$CACHE/$6.png"
+	else
+		PDF_TYPE="jpg"
+		PDF_PATH="$CACHE/$6"
+	fi
+
     if [[ ! "$6" == "$PDF_FILE" ]]; then
         PDF_PAGE=1
         echo 1 > $PDF_PAGE_CONFIG
-        rm -f "/tmp$PWD/$6.png"
+        rm -f "$PDF_PATH"
     fi
 
-    if [[ ! "$PDF_PAGE" == "1" ]] && [[ -f "/tmp$PWD/$6.png" ]]; then
-        rm -f "/tmp$PWD/$6.png"
+	if [[ ! "$PDF_PAGE" == "1" ]] && [[ -f "$PDF_PATH.$PDF_TYPE" ]]; then
+		rm -f "$PDF_PATH"
     fi
 
-    if [[ ! -f "/tmp$PWD/$6.png" ]]; then
-        pdftoppm -png -f $PDF_PAGE -singlefile "$6" "/tmp$PWD/$6"
+	if [[ ! -f "$PDF_PATH.$PDF_TYPE" ]]; then
+
+		# convert it to jpeg or pdf?
+		if [[ $PDF_TYPE == "jpg" ]]; then
+        	pdftoppm -f 1 -l 1 -scale-to-y -1 -singlefile -jpeg -tiffcompression jpeg "$6" "$PDF_PATH"
+		else
+			pdftoppm -png -f $PDF_PAGE -singlefile "$6" "$PDF_PATH"
+		fi
+
     fi
     echo "$6" > $PDF_FILE_CONFIG
 
     declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
         [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-        [path]="/tmp$PWD/$6.png") \
+		[path]="$PDF_PATH.$PDF_TYPE") \
         > "$FIFO_UEBERZUG"
 }
 
 
 function previewmagick() {
-    if [[ ! -f "/tmp$PWD/$6.png" ]]; then
-        convert -thumbnail $(identify -format "%wx%h" "$6") "$PWD/$6" "/tmp$PWD/$6.png"
+    if [[ ! -f "$CACHE/$6.png" ]]; then
+        convert -thumbnail $(identify -format "%wx%h" "$6") "$PWD/$6" "$CACHE/$6.png"
     fi
     declare -p -A cmd=([action]=add [identifier]="$ID_PREVIEW"
         [x]="$2" [y]="$3" [width]="$4" [height]="$5" \
-        [path]="/tmp$PWD/$6.png") \
+        [path]="$CACHE/$6.png") \
         > "$FIFO_UEBERZUG"
 }
 
