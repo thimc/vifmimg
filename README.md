@@ -9,94 +9,57 @@ If you want image preview support for [lf](https://github.com/gokcehan/lf) check
 
 
 The script is currently able to handle the following formats:
-* Video files
-* eBook files
-* Images and icons
+* Video
+* eBook
+* Images
 * Audio files
-* Font files
+* Fonts
 
-Video previews are also supported by using ffmpegthumbnailer and works very well but just
-like the PDF previews there is a minor flash between each preview, this is due to
-ffmpegthumbnailer generating the preview file.
+All previews are cached (except for regular images) and stored in your **~/.cache/vifm/** folder.
 
-GIF files are as of now in the works, it _works_ but in order to break out of the
-animation loop the user needs to hit the CTRL-C. Sometimes this breaks the preview
-entirely. When resizing the terminal window the animation replays.
-There is room for improvement here.
-
-PDF/epub preview is also supported, this is done via pdftoppm and epub-thumbnailer and works almost flawlessly,
-a minor flash between the previews occur due to pdftoppm generating the image.
-
-Ico files are supported and is utilizing ImageMagick.
 
 ## Installation
 1. Copy the **vifmimg** and **vifmrun** scripts to a folder that is included in your $PATH
 variable for easy access to the files.
 
 2. Edit your **~/.config/vifm/vifmrc** file and add fileviewer properties like so:
-
-
 ```
     fileviewer *.pdf
-        \ vifmimg pdfpreview %px %py %pw %ph %c "png"
+        \ vifmimg pdf %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 
     fileviewer *.epub
-        \ vifmimg epubpreview %px %py %pw %ph %c
+        \ vifmimg epub %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 
-    fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
-        \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
-        \ vifmimg videopreview %px %py %pw %ph %c
+    fileviewer <video/*>
+        \ vifmimg video %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 
-    fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.xpm
+    fileviewer <image/*>
         \ vifmimg draw %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 
-    fileviewer *.gif
-        \ vifmimg gifpreview %px %py %pw %ph %c
-        \ %pc
-        \ vifmimg clear
-
-    fileviewer *.ico
-        \ vifmimg magickpreview %px %py %pw %ph %c
-        \ %pc
-        \ vifmimg clear
-        
     fileviewer <audio/*>
-        \ vifmimg audiopreview %px %py %pw %ph %c
+        \ vifmimg audio %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
-        
+
     fileviewer <font/*>
-        \ vifmimg fontpreview %px %py %pw %ph %c
+        \ vifmimg font %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
-```
-
-Your PDF-Preview will be shown as a `PNG`-File. If you want to load the pdf-file faster than you can try to convert the pdf-file into a `jpeg`-File. In that case you just need to remove `"png"` in you `fileviewer` in your `vifmrc`. <br>
-**HINT**: It _might_ be faster...
-```
-    fileviewer *.pdf
-        \ vifmimg pdfpreview %px %py %pw %ph %c
-        \ %pc
-        \ vifmimg clear
-```
-
-You will also need to add these keybindings (preferably in the bottom of your vifmrc) in order to get the PDF scrolling functionalities:
 
 ```
-    map > :!vifmimg inc<CR>
-    map < :!vifmimg dec<CR>
-```
 
-3. In order to launch Vifm with image preview from now you'll need to use the supplied
-**vifmrun** script
+3. In order to launch vifm with image preview support from now on, you will need to use the supplied **vifmrun** script.
+
+I recommend that you make an alias in your shell that points to vifm.
+
 
 ## Prerequisites
 * [Überzug](https://github.com/seebye/ueberzug) and [Vifm](https://github.com/vifm/vifm) (isn't this obvious?)
