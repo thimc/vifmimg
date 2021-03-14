@@ -7,6 +7,7 @@ else
 	    rm "$FIFO_UEBERZUG"
 	    pkill -P $$ >/dev/null
 	}
+	[ ! -d "$HOME/.cache/vifm" ] && mkdir --parents "$HOME/.cache/vifm"
 	export FIFO_UEBERZUG="$HOME/.cache/vifm/ueberzug-${PPID}"
 	mkfifo "$FIFO_UEBERZUG"
 	tail --follow "$FIFO_UEBERZUG" | ueberzug layer --silent --parser bash 2>&1 >/dev/null &
