@@ -2,6 +2,8 @@
 
 if [ -z "$(whereis ueberzug | awk '{print $2}')" ]; then
 	exec vifm "$@" && exit
+elif [ -z "$DISPLAY" ]; then
+	exec vifm "$@" && exit
 else
 	cleanup() {
 	    rm "$FIFO_UEBERZUG"
