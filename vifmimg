@@ -49,7 +49,7 @@ main() {
 			image "$1" "$2" "$3" "$4" "$5" "${CACHE}.jpg"
 			;;
         *)
-			echo "Unknown command: '$@'"
+			echo "Unknown command: " "$@"
 			;;
     esac
 }
