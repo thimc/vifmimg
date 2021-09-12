@@ -10,6 +10,8 @@ If you want image preview support for [lf](https://github.com/gokcehan/lf) check
 
 The script is currently able to handle the following formats:
 * Video
+* Pdf
+* Djvu
 * eBook
 * Images
 * Audio files
@@ -26,6 +28,11 @@ variable for easy access to the files.
 ```
     fileviewer *.pdf
         \ vifmimg pdf %px %py %pw %ph %c
+        \ %pc
+        \ vifmimg clear
+
+    fileviewer *.djvu
+        \ vifmimg djvu %px %py %pw %ph %c
         \ %pc
         \ vifmimg clear
 
@@ -65,7 +72,8 @@ I recommend that you make an alias in your shell that points to vifm.
 * [Überzug](https://github.com/seebye/ueberzug) and [Vifm](https://github.com/vifm/vifm) (isn't this obvious?)
 * [ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)
 * ImageMagick
-* pdftoppm (Available in the AUR as **poppler** package.)
+* pdftoppm (Available in the AUR as `poppler` package.)
+* [ddjvu](http://djvu.sourceforge.net/doc/man/ddjvu.html) (Contains in the Debian/Ubuntu `djvulibre-bin` package.)
 * [epub-thumbnailer](https://github.com/marianosimone/epub-thumbnailer)
 * [fontpreview](https://github.com/sdushantha/fontpreview)
 
