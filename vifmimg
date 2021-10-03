@@ -40,7 +40,7 @@ main() {
 			;;
         "audio")
 			[ ! -f "${PCACHE}.jpg" ] && \
-				ffmpeg -i "$6" "${PCACHE}.jpg" -y >/dev/null
+				ffmpeg -hide_banner -i "$6" "${PCACHE}.jpg" -y >/dev/null
 			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
 			;;
         "font")
