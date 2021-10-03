@@ -11,7 +11,7 @@ else
 	    rm "$FIFO_UEBERZUG"
 	}
 	[ ! -d "$HOME/.cache/vifm" ] && mkdir -p "$HOME/.cache/vifm"
-	export FIFO_UEBERZUG="$HOME/.cache/vifm/ueberzug-${PPID}"
+	export FIFO_UEBERZUG="$HOME/.cache/vifm/ueberzug-${$}"
 	mkfifo "$FIFO_UEBERZUG"
 	ueberzug layer -s <"$FIFO_UEBERZUG" -p json &
 	exec 3>"$FIFO_UEBERZUG"
