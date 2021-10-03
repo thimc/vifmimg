@@ -1,5 +1,5 @@
 #!/bin/sh
-export PCACHE="$HOME/.cache/vifm/thumbnail.$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$PWD/$6")" | sha256sum | awk '{print $1}'))"
+export PCACHE="$HOME/.cache/vifm/thumbnail.$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$PWD/$6")" | sha256sum | awk '{print $1}')"
 
 pclear() {
 	printf '{"action": "remove", "identifier": "vifm-preview"}\n' > "$FIFO_UEBERZUG"
@@ -31,6 +31,11 @@ main() {
         "pdf")
 			[ ! -f "${PCACHE}.jpg" ] && \
 				pdftoppm -jpeg -f 1 -singlefile "$6" "$PCACHE"
+			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
+			;;
+        "djvu")
+			[ ! -f "${PCACHE}.jpg" ] && \
+				ddjvu -format=tiff -quality=90 -page=1 "$6" "$PCACHE.jpg"
 			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
 			;;
         "audio")
