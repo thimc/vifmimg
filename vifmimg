@@ -1,56 +1,54 @@
 #!/bin/sh
 
-PCACHE="$HOME/.cache/vifm/thumbnail.$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$PWD/$6")" | sha256sum)"
-export PCACHE="${PCACHE%% *}"
+main() {
+    CMD="$1"
+    X=$2
+    Y=$3
+    MW=$4
+    MH=$5
+    FILE="$(readlink -f "$PWD/$6")"
+    CACHE="$XDG_CACHE_HOME/ueberzugpp/$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE" | sha512sum).jpg"
+    CACHE="${CACHE%% *}"
 
-pclear() {
-	printf '{"action": "remove", "identifier": "vifm-preview"}\n' > "$FIFO_UEBERZUG"
+    case "$CMD" in
+        "clear") clear; exit;;
+        "draw") CACHE="$FILE";;
+        "video") [ ! -f "$CACHE" ] && ffmpegthumbnailer -i "$FILE" -o "$CACHE" -s 0 -q 5;;
+        "audio") [ ! -f "$CACHE" ] && ffmpeg -hide_banner -i "$FILE" "$CACHE" -y >/dev/null;;
+        "pdf")   [ ! -f "$CACHE" ] && pdftoppm -jpeg -f 1 -singlefile "$FILE" "$CACHE";;
+        "epub")  [ ! -f "$CACHE" ] && epub-thumbnailer "$FILE" "$CACHE" 720;;
+        "djvu")  [ ! -f "$CACHE" ] && ddjvu -format=tiff -quality=90 -page=1 "$FILE" "$CACHE";;
+        "font")  [ ! -f "$CACHE" ] && fontpreview -i "$FILE" -o "$CACHE";;
+        "cbz"|"cbt"|"cb7"|"cbr") [ ! -f "$CACHE" ] && cache_first_image;;
+        *) exit 1;;
+    esac
+
+    image "$X" "$Y" "$MW" "$MH" "$CACHE"
 }
 
 image() {
-		printf '{"action": "add", "identifier": "vifm-preview", "x": "%s", "y": "%s", "width": "%s", "height": "%s", "scaler": "contain", "path": "%s"}\n' "$2" "$3" "$4" "$5" "$6" > "$FIFO_UEBERZUG"
+    ueberzugpp cmd -s "$UB_SOCKET" -a add -i PREVIEW \
+        -x "$1" -y "$2" --max-width "$3" --max-height "$4" -f "$5"
 }
 
-main() {
-    case "$1" in
-        "clear")
-			pclear "$@"
-			;;
-        "draw")
-			FILE="$PWD/$6"
-			image "$1" "$2" "$3" "$4" "$5" "$FILE"
-			;;
-        "video")
-			[ ! -f "$PCACHE" ] && \
-				ffmpegthumbnailer -i "$6" -o "${PCACHE}.jpg" -s 0 -q 5
-			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
-			;;
-        "epub")
-			[ ! -f "$PCACHE" ] && \
-				epub-thumbnailer "$6" "$PCACHE" 1024
-			image "$1" "$2" "$3" "$4" "$5" "$PCACHE"
-			;;
-        "pdf")
-			[ ! -f "${PCACHE}.jpg" ] && \
-				pdftoppm -jpeg -f 1 -singlefile "$6" "$PCACHE"
-			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
-			;;
-        "djvu")
-			[ ! -f "${PCACHE}.jpg" ] && \
-				ddjvu -format=tiff -quality=90 -page=1 "$6" "$PCACHE.jpg"
-			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
-			;;
-        "audio")
-			[ ! -f "${PCACHE}.jpg" ] && \
-				ffmpeg -hide_banner -i "$6" "${PCACHE}.jpg" -y >/dev/null
-			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
-			;;
-        "font")
-			[ ! -f "${PCACHE}.jpg" ] && \
-				fontpreview -i "$6" -o "${PCACHE}.jpg"
-			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
-			;;
-        *)
-    esac
+clear() {
+    ueberzugpp cmd -s "$UB_SOCKET" -a remove -i PREVIEW
 }
+
+cache_first_image() {
+    tmpdir="$(mktemp --directory)"
+    cleanup() { fusermount -u "$1" && rm -rf "$1"; }
+    trap "cleanup $tmpdir" EXIT
+
+    case "$CMD" in
+        "cbz") fuse-zip -r "$FILE" "$tmpdir";;
+        "cbt") archivemount "$FILE" "$tmpdir" -o readonly;;
+        "cb7") fuse3-p7zip "$FILE" "$tmpdir";;
+        "cbr") rar2fs "$FILE" "$tmpdir";;
+    esac
+
+    first_image="$(find "$tmpdir" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" \) | sort | head -1)"
+    convert -thumbnail 720 "$first_image" "$CACHE"
+}
+
 main "$@"
