@@ -7,15 +7,15 @@ main() {
     MW=$4
     MH=$5
     FILE="$(readlink -f "$PWD/$6")"
-    CACHE="$XDG_CACHE_HOME/ueberzugpp/$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE" | sha512sum).jpg"
-    CACHE="${CACHE%% *}"
+    SHA="$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE" | sha512sum)"
+    CACHE="$XDG_CACHE_HOME/ueberzugpp/${SHA%% *}.jpg"
 
     case "$CMD" in
         "clear") clear; exit;;
         "draw") CACHE="$FILE";;
         "video") [ ! -f "$CACHE" ] && ffmpegthumbnailer -i "$FILE" -o "$CACHE" -s 0 -q 5;;
         "audio") [ ! -f "$CACHE" ] && ffmpeg -hide_banner -i "$FILE" "$CACHE" -y >/dev/null;;
-        "pdf")   [ ! -f "$CACHE" ] && pdftoppm -jpeg -f 1 -singlefile "$FILE" "$CACHE";;
+        "pdf")   [ ! -f "$CACHE" ] && pdftoppm -jpeg -f 1 -singlefile "$FILE" "${CACHE%%.jpg}";;
         "epub")  [ ! -f "$CACHE" ] && epub-thumbnailer "$FILE" "$CACHE" 720;;
         "djvu")  [ ! -f "$CACHE" ] && ddjvu -format=tiff -quality=90 -page=1 "$FILE" "$CACHE";;
         "font")  [ ! -f "$CACHE" ] && fontpreview -i "$FILE" -o "$CACHE";;
