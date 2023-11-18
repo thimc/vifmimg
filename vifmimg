@@ -21,7 +21,7 @@ main() {
 			image "$1" "$2" "$3" "$4" "$5" "$FILE"
 			;;
         "video")
-			[ ! -f "$PCACHE" ] && \
+			[ ! -f "${PCACHE}.jpg" ] && \
 				ffmpegthumbnailer -i "$6" -o "${PCACHE}.jpg" -s 0 -q 5
 			image "$1" "$2" "$3" "$4" "$5" "${PCACHE}.jpg"
 			;;
